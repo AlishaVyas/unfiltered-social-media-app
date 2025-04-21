@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Unfiltered - Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .mood-tag {
+      font-family: 'Shadows Into Light', cursive;
+    }
+  </style>
+</head>
+<body class="bg-zinc-900 text-gray-200 min-h-screen flex flex-col justify-between">
+
+  <!-- Profile Container -->
+  <div class="max-w-xl mx-auto w-full px-4 pt-6 space-y-6">
+
+    <!-- Username and Logout Button -->
+    <div class="flex justify-between items-center">
+      <div class="text-center">
+        <h1 class="text-3xl font-semibold text-violet-500"><%= user.username %></h1>
+        <p class="text-xl text-blue-300 mt-2" style="font-family: 'Kalam', cursive;"><%= user.name %></p>
+      </div>
+      <div>
+        <a href="/logout" class="text-violet-500 hover:text-violet-400 text-lg font-semibold">Logout</a>
+      </div>
+    </div>
+
+    <!-- Profile Image -->
+    <div class="flex justify-center">
+      <img 
+        src="<%= user.profilePic ? user.profilePic : 'https://i.pinimg.com/originals/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg' %>" 
+        alt="Profile Pic" 
+        class="w-32 h-32 rounded-full border-4 border-violet-500 object-cover"
+      >
+    </div>
+
+    <!-- Bio -->
+    <div class="bg-zinc-800 p-4 rounded-lg text-gray-300">
+      <p><%= user.bio || 'Just living the unfiltered life — raw, real, and mood-rich ✨' %></p>
+    </div>
+
+    <!-- Posts Feed -->
+    <div class="max-h-[400px] overflow-y-auto space-y-4 py-4">
+      <% if (user.posts && user.posts.length > 0) { %>
+        <% user.posts.forEach(post => { %>
+          <div class="bg-zinc-800 rounded-xl p-4">
+            <img src="<%= post.image %>" alt="Post image" class="w-full rounded-lg mb-2">
+            <p class="text-gray-300"><%= post.caption %></p>
+            <span class="mood-tag bg-violet-200 text-violet-800 px-3 py-1 rounded-full text-sm inline-block mt-2"><%= post.mood %></span>
+          </div>
+        <% }) %>
+      <% } else { %>
+        <p class="text-center text-gray-400">You haven't posted anything</p>
+      <% } %>
+    </div>
+
+  </div>
+
+  <!-- Bottom Navbar -->
+  <div class="w-full bg-zinc-800 p-4 fixed bottom-0 left-0 right-0 flex justify-center border-t border-zinc-700">
+    <a href="/upload" class="bg-violet-500 hover:bg-violet-400 text-white text-2xl px-6 py-2 rounded-full shadow-md transition">+</a>
+  </div>
+
+</body>
+</html>

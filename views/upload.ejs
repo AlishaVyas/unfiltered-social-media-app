@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Image</title>
+</head>
+<body>
+  <h1>Upload an Image</h1>
+
+  <!-- Form for uploading image -->
+  <form action="/upload" method="POST" enctype="multipart/form-data">
+    <input type="file" name="image" accept="image/*" required />
+    <input type="text" name="caption" placeholder="Add a caption" />
+    <input type="text" name="mood" placeholder="Add your mood (optional)" />
+    <button type="submit">Upload</button>
+  </form>
+
+  <% if (imagePath) { %>
+    <h2>Uploaded Image:</h2>
+    <img src="<%= imagePath %>" alt="Uploaded Image" style="width: 300px;" />
+    <p><strong>Caption:</strong> <%= caption %></p>
+    <p><strong>Mood:</strong> <%= mood %></p>
+  <% } %>
+
+</body>
+</html>

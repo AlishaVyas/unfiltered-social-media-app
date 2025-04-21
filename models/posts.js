@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const postSchema = mongoose.Schema({
-  imageUrl: String,          // 📸 stores Cloudinary URL
+  image: String,          
   caption: String,           // optional
   mood: String,              // e.g., happy, sad, etc.
   user : {                // reference to user
