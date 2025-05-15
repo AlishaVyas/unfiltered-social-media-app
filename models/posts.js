@@ -1,17 +1,32 @@
 const mongoose = require('mongoose');
 
-const postSchema = mongoose.Schema({
-  image: String,          
-  caption: String,           // optional
-  mood: String,              // e.g., happy, sad, etc.
-  user : {                // reference to user
+const postSchema = new mongoose.Schema({
+  imageData: {
+    type: Buffer,
+    required: true
+  },
+  imageType: {
+    type: String,
+    required: true
+  },
+  caption: {
+    type: String,
+    default: ''
+  },
+  
+  user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'user'
+    ref: 'User',
+    required: true
   },
   date: {
     type: Date,
     default: Date.now
-  }
+  },
+  likes: [
+    {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
+  ]
+
 });
 
-module.exports = mongoose.model('post', postSchema);
+module.exports = mongoose.model('Post', postSchema);
