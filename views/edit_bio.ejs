@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unfiltered - Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500&family=Shadows+Into+Light&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .mood-tag {
+      font-family: 'Shadows Into Light', cursive;
+    }
+  </style>
+</head>
+
+<body class="bg-zinc-900 text-gray-200 min-h-screen flex flex-col justify-between">
+
+
+  <!-- Profile Container -->
+  <div class="max-w-xl mx-auto w-full px-4 pt-6 space-y-6">
+
+    
+
+    <!-- Bio -->
+    <div class="bg-zinc-800 p-4 rounded-lg text-gray-300">
+
+
+      <form method="post" action="bio_update/<%= user._id %>">
+
+        <input 
+        class="bg-zinc-800 block p-3 outline-none w-full rounded-lg text-white" 
+        type="text" 
+        name="newbio" value="<%= user.bio %>">
+        <input type="submit" class="text-violet-200 cursor-pointer"  value="save" >
+       
+      </form>
+      
+    </div>
+    
+
+  </div>
+
+
+
+</body>
+
+</html>

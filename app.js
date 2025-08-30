@@ -2,11 +2,13 @@ const express = require('express');
 const app = express();
 
 const userModel = require('./models/user');
-const postModel = require('./models/posts')
+const postModel = require('./models/posts');
+
 const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const multer = require('multer');
+
 const storage = multer.memoryStorage();
 const path = require('path');
 const mongoose = require('mongoose');
@@ -14,12 +16,16 @@ const mongoose = require('mongoose');
 mongoose.connect("mongodb://127.0.0.1:27017/projectUnfiltered");
 
 app.set("view engine", "ejs");
+
 app.use(express.json());
+
 app.use(express.urlencoded({ extended: true }));
+
 app.use('/uploads', express.static('uploads'));
+
 app.use(cookieParser());
 
-const upload = multer({ //(image/jpeg) https://expressjs.com/en/resources/middleware/multer.html
+const upload = multer({ 
     storage,
     fileFilter: (req, file, cb) => {
         if (/^image\/(jpeg|png|gif)$/.test(file.mimetype)) {
@@ -37,22 +43,28 @@ app.get('/', (req, res) => {
 })
 
 app.post('/register', async (req, res) => {
-    let { email, password, username, name, age } = req.body;
+    let { email, password, username, name, bio } = req.body;
+
     name = name.charAt(0).toUpperCase() + name.slice(1);
+
     let user = await userModel.findOne({ username });
+
     if (user) return res.status(500).send("username already taken");
+
     bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(password, salt, async (err, hash) => {
             let user = await userModel.create({
                 username,
                 email,
-                age,
+                bio,
                 name,
                 password: hash
             });
 
             let token = jwt.sign({ username: username, userid: user._id }, "secret");
+
             res.cookie("token", token);
+
             res.redirect("profile");
         })
     })
@@ -79,6 +91,8 @@ app.post('/login', async (req, res) => {
             return res.status(401).send("Invalid password");
         }
     });
+    
+
 });
 
 
@@ -92,13 +106,41 @@ app.get('/profile', isLoggedIn, async (req, res) => {
     try {
         const user = await userModel
             .findById(req.user.userid)
-            .populate('posts').exec();
-        res.render('profile', { user});
+            .populate('posts');
+
+        
+        user.posts = user.posts || [];
+
+        res.render('profile',{user:user});
+
 
     } catch (err) {
         console.error(err);
         res.status(500).send('Error fetching user profile');
     }
+});
+
+
+
+app.get('/bio_edit/:id', isLoggedIn, async(req,res)=>{
+
+    const user = await userModel
+        .findById(req.user.userid);
+
+     
+
+    res.render('edit_bio',{user:user});
+});
+
+app.post('/bio_edit/bio_update/:id', isLoggedIn, async(req,res)=>{
+
+    const user = await userModel.findByIdAndUpdate(
+        req.params.id,
+        { bio: req.body.newbio},
+        { new: true}
+    );
+    res.redirect('/profile');
+
 });
 
 
@@ -118,7 +160,7 @@ app.get('/upload', (req, res) => {
 app.post('/upload', isLoggedIn, upload.single('image'), async (req, res) => {
     try {
 
-        if (!req.file) {
+        if(!req.file) {
             return res.status(400).send('No file uploaded.');
         }
 
@@ -147,24 +189,32 @@ app.post('/upload', isLoggedIn, upload.single('image'), async (req, res) => {
 });
 
 app.get('/like/:id', isLoggedIn, async (req, res) => {
-    try {
-        const post = await postModel
-            .findOne({_id: req.params.id})
-            .populate('user');
-        post.likes.push(req.user._id);
+        let post = await postModel
+            .findOne({_id:req.params.id}).populate("user");
+
+        const user = await userModel
+            .findById(req.user.userid).populate('posts');    
+
+        console.log(post);
+
+        if(post.likes.indexOf(req.user.userid) === -1){
+            post.likes.push(req.user.userid);
+        }else{
+            post.likes.splice(post.likes.indexOf(req.user.userid),1);
+        }
+
         await post.save();
-        res.render('profile', { user: req.user });
+        
+        
+        // res.redirect('/profile',{user:user, post:post});
+        res.redirect('/profile');
 
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error fetching user profile');
-    }
-});
-
-app.get("/test", (req,res)=>{
-    res.render("/test");
+    
 });
 
 
 
-app.listen(3000);
+
+app.listen(3000, (req,res)=>{
+    console.log("yes Runnig!")
+});

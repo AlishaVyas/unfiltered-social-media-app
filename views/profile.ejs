@@ -50,23 +50,27 @@
     <!-- Bio -->
     <div class="bg-zinc-800 p-4 rounded-lg text-gray-300">
       <p>
-        <%= user.bio || 'Just living the unfiltered life — raw, real, and mood-rich ✨' %>
+        <%= user.bio || 'Just living the unfiltered life ✨' %>
       </p>
+      <a class="text-violet-200" href="/bio_edit/<%=user._id%>">edit</a>
     </div>
 
     <!-- Posts Feed -->
     <div class="max-w-xl mx-auto w-full px-4 pt-6 space-y-6 pb-24">
 
-
-      <% user.posts.slice().reverse().forEach(post => { %>
+      
+      <% user.posts.reverse().forEach(function(post){ %>
         <div class="bg-zinc-800 rounded-xl p-4 shadow-md">
           <img
             src="data:<%= post.imageType %>;base64,<%= post.imageData.toString('base64') %>" 
             alt="User upload"
-            class="w-full max-w-[300px] mx-auto rounded-lg mb-3 object-cover"
+            class="w-full max-w-[250px] mx-auto rounded-lg mb-3 object-cover"
           />
           <p class="text-violet-400"><%= post.caption %></p>
-          <a class="text-violet-400" href="/like/<%= post._id %>">🩷</a>
+          <div>
+            <samp class="p-2"><%= post.likes.length%></samp> 
+            <a class="text-red-400" href="/like/<%= post._id %>">Like</a>
+          </div>
           <p class="text-sm text-gray-500 mt-2"><%= post.date.toLocaleString() %></p>
         </div>
       <% }) %>
