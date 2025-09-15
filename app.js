@@ -13,7 +13,9 @@ const storage = multer.memoryStorage();
 const path = require('path');
 const mongoose = require('mongoose');
 
-mongoose.connect("mongodb://127.0.0.1:27017/projectUnfiltered");
+require('dotenv').config();
+
+mongoose.connect(process.env.MONGODB_URI);
 
 app.set("view engine", "ejs");
 
@@ -61,7 +63,7 @@ app.post('/register', async (req, res) => {
                 password: hash
             });
 
-            let token = jwt.sign({ username: username, userid: user._id }, "secret");
+            let token = jwt.sign({ username: username, userid: user._id }, process.env.JWT_SECRET);
 
             res.cookie("token", token);
 
@@ -84,7 +86,7 @@ app.post('/login', async (req, res) => {
         if (err) return res.status(500).send("Error comparing passwords");
 
         if (result) {
-            let token = jwt.sign({ username: username, userid: user._id }, "secret");
+            let token = jwt.sign({ username: username, userid: user._id }, process.env.JWT_SECRET);
             res.cookie("token", token);
             return res.status(200).redirect("/profile");
         } else {
@@ -173,7 +175,7 @@ app.post('/bio_edit/bio_update/:id', isLoggedIn, async(req,res)=>{
 function isLoggedIn(req, res, next) {
     if (req.cookies.token === "") return res.redirect("/")
     else {
-        let data = jwt.verify(req.cookies.token, "secret");
+        let data = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
         req.user = data;
     }
     next();
