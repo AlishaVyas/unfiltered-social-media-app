@@ -52,7 +52,7 @@ app.post('/register', async (req, res) => {
     if (user) return res.status(500).send("username already taken");
 
     bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(password, salt, async (err, hash) => {
+        bcrypt.hash(password, salt, async (err, hash) => { 
             let user = await userModel.create({
                 username,
                 email,
@@ -118,6 +118,32 @@ app.get('/profile', isLoggedIn, async (req, res) => {
         console.error(err);
         res.status(500).send('Error fetching user profile');
     }
+});
+
+
+app.get('/home', isLoggedIn, async (req, res) => {
+  try {
+
+    const user = await userModel
+            .findById(req.user.userid)
+            .populate('posts');
+
+    
+    const posts = await postModel.find()
+      .populate('user', 'username email')
+      .sort({ date: -1 });
+
+    
+
+    // posts.forEach(function(p){
+    //     res.json(p.id);
+    // })
+
+    // res.json(posts); // or res.render('home', { posts })
+    res.render('home', {user:user, posts:posts} );
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 
@@ -207,9 +233,45 @@ app.get('/like/:id', isLoggedIn, async (req, res) => {
         
         
         // res.redirect('/profile',{user:user, post:post});
-        res.redirect('/profile');
+        const backURL = req.get('Referer') || '/';
+        res.redirect(backURL);
 
     
+});
+
+app.get('/profile_pic_edit/:id', isLoggedIn, (req, res) => {
+    res.render('profile_pic_edit');
+});
+
+app.post('/profile_pic_edit/:id', isLoggedIn, upload.single('image'), async (req, res) => {
+    try {
+
+        if(!req.file) {
+            return res.status(400).send('No file uploaded.');
+        }
+
+        const { buffer, mimetype } = req.file;
+        const { caption = '', mood = '' } = req.body;
+
+        // const newPost = await postModel.create({
+        //     imageData: buffer,
+        //     imageType: mimetype,
+        //     caption,
+        //     user: req.user.userid
+        // });
+
+        // const updatedUser = await userModel.findByIdAndUpdate(
+        //     req.user.userid,
+        //     { $push: { posts: newPost._id } },
+        //     { new: true }
+        // );
+
+        res.redirect('/profile');
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error updating profile');
+    }
 });
 
 

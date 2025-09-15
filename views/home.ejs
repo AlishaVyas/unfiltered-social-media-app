@@ -29,7 +29,7 @@
     <div class="flex justify-between items-center">
       <div class="text-center">
         <h1 class="text-3xl font-semibold text-violet-500">
-          <%= user.username %>
+          <%= user.username %> 
         </h1>
         <p class="text-xl text-blue-300 mt-2" style="font-family: 'Kalam', cursive;">
           <%= user.name %>
@@ -40,28 +40,15 @@
       </div>
     </div>
 
-    <!-- Profile Image -->
-    <div class="flex justify-center">
-      <img
-        src="<%= user.profilePic ? user.profilePic : 'https://i.pinimg.com/originals/0d/64/98/0d64989794b1a4c9d89bff571d3d5842.jpg' %>"
-        alt="Profile Pic" class="w-32 h-32 rounded-full border-4 border-violet-500 object-cover">
-      <!-- <a class="text-violet-200 ml-4 self-end" href="/profile_pic_edit/<%=user._id%>">🪄</a> -->
-    </div>
-
-    <!-- Bio -->
-    <div class="bg-zinc-800 p-4 rounded-lg text-gray-300">
-      <p>
-        <%= user.bio || 'Just living the unfiltered life ✨' %>
-      </p>
-      <a class="text-violet-200" href="/bio_edit/<%=user._id%>">edit</a>
-    </div>
+    
 
     <!-- Posts Feed -->
     <div class="max-w-xl mx-auto w-full px-4 pt-6 space-y-6 pb-24">
 
       
-      <% user.posts.reverse().forEach(function(post){ %>
+      <% posts.forEach(function(post){ %>
         <div class="bg-zinc-800 rounded-xl p-4 shadow-md">
+          <p class="text-lg text-gray-500 m-3"><%= post.user.username%> </p>
           <img
             src="data:<%= post.imageType %>;base64,<%= post.imageData.toString('base64') %>" 
             alt="User upload"
@@ -81,7 +68,7 @@
   </div>
 
   <!-- Bottom Navbar -->
-    <div class="w-full bg-zinc-800 p-4 fixed bottom-0 left-0 right-0 flex justify-center border-t border-zinc-700 gap-4">
+  <div class="w-full bg-zinc-800 p-4 fixed bottom-0 left-0 right-0 flex justify-center border-t border-zinc-700 gap-4">
     <a href="/home"
       class="bg-violet-500 hover:bg-violet-400 text-white text-lg px-6 py-2 rounded-full shadow-md transition">Home</a> 
     <a href="/upload"
